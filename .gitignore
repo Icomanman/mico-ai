@@ -5,3 +5,6 @@
 *.tmp.*
 *.pdf
 *.env
+
+/__pycache__
+*.pyc

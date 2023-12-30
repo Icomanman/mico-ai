@@ -1,7 +1,5 @@
 
-import json
 import sys
-import streamlit as st
 from langchain.document_loaders.csv_loader import CSVLoader
 from langchain.docstore.document import Document
 from langchain.vectorstores import FAISS
@@ -11,9 +9,8 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
 from dotenv import load_dotenv
 
-from tmp import prompt # NO QA
+from tmp.prompt import prompt  # NOQA
 
-load_dotenv()
 
 # 1. Vectorise the csv data
 def vectorise(path='./tmp/dat.csv'):
@@ -24,20 +21,22 @@ def vectorise(path='./tmp/dat.csv'):
         print(e)
         sys.exit(1)
 
-    print (f'> {len(documents)} entries found.')
+    print(f'> {len(documents)} entries found.')
     return documents
+
 
 # 2. Function for similarity search
 def retrieve_info(src, query):
     result_data = []
     embeddings = OpenAIEmbeddings()
     db = FAISS.from_documents(src, embeddings)
-    similar_responses = db.similarity_search(query, k=3) # returns 'list' object
-    
+    similar_responses = db.similarity_search(
+        query, k=3)  # returns 'list' object
+
     # f = open('./doc.tmp.txt', 'r')
     # similar_responses = f.read()
     # print(similar_responses)
-    
+
     page_contents_arr = [doc.page_content for doc in similar_responses]
 
     # for content in page_contents_arr:
@@ -58,15 +57,16 @@ def retrieve_info(src, query):
 #     response = chain.run(message=message, best_practice=best_practice)
 #     return response
 
+
 def main():
-    
-    src = vectorise()
+    # load_dotenv()
+    # src = vectorise()
     msg = 'How can I adapt to the changing environment of the civil engineering industry?'
-    results = retrieve_info(src, msg)
-   
+    # results = retrieve_info(src, msg)
+
     # 3. Setup LLMChain & prompts
-    llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k-0613")
-    # template = prompt()
+    # llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k-0613")
+    template = prompt()
 
     tmp = """
     Say you are a Civil and Structural engineer with 4 decades of experience while having an up-to-date knowledge 
@@ -93,20 +93,19 @@ def main():
     Please write the best response for the interest of the 
     """
 
+    # prompt_template = PromptTemplate(
+    #     input_variables=["question", "response"],
+    #     template=tmp
+    # )
 
-    prompt_template = PromptTemplate(
-        input_variables=["question", "response"],
-        template=tmp
-    )
-
-    chain = LLMChain(llm=llm, prompt=prompt_template)
+    # chain = LLMChain(llm=llm, prompt=prompt_template)
 
     # 4. Retrieval augmented generation
-    response = chain.run(question=msg, response=results)
+    # response = chain.run(question=msg, response=results)
 
-    print(response)
-    with open('./response.tmp.txt', 'w+') as f:
-        f.write(f'{response}')
+    # print(response)
+    # with open('./response.tmp.txt', 'w+') as f:
+    #     f.write(f'{response}')
 
     return
 
