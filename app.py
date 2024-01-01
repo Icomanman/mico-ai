@@ -30,84 +30,47 @@ def retrieve_info(src, query):
     result_data = []
     embeddings = OpenAIEmbeddings()
     db = FAISS.from_documents(src, embeddings)
-    similar_responses = db.similarity_search(
+    responses = db.similarity_search(
         query, k=3)  # returns 'list' object
 
-    # f = open('./doc.tmp.txt', 'r')
-    # similar_responses = f.read()
-    # print(similar_responses)
-
-    page_contents_arr = [doc.page_content for doc in similar_responses]
-
-    # for content in page_contents_arr:
-    #     print(type(content))
-    #     print(content)
-    #     answers = [entry.a for entry in content]
-    #     complement = [entry.p for entry in content]
-
-    #     result_data.append((query, answers, complement))
-
-    # f.close()
-    return page_contents_arr
-    # return result_data
-
-# 4. Retrieval augmented generation
-# def generate_response(message):
-#     best_practice = retrieve_info(message)
-#     response = chain.run(message=message, best_practice=best_practice)
-#     return response
+    result_data = [doc.page_content for doc in responses]
+    return result_data
 
 
-def main():
-    # load_dotenv()
-    # src = vectorise()
-    msg = 'How can I adapt to the changing environment of the civil engineering industry?'
-    # results = retrieve_info(src, msg)
-
+# 3-4. Setup LLMChain & prompts; Retrieval augmented generation
+def generate_response(query, src_responses):
     # 3. Setup LLMChain & prompts
-    # llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k-0613")
-    template = prompt()
-
-    tmp = """
-    Say you are a Civil and Structural engineer with 4 decades of experience while having an up-to-date knowledge 
-    of the developments in the industry, including but not limited to technology. 
-    You are to answer certain questions that will help someone 
-    to navigate their career and the industry in general.
-
-    In line with this, I will share some sample questions with their corresponding answers,
-    tips and advice with you and you will give the best answer to such questions 
-    while you follow ALL of the rules below:
-
-    1/ Response should be very similar or even identical to the tips and advice, 
-    in terms of length, tone of voice, logical arguments and other details.
-
-    2/ If the tips and advice are irrelevant to the question, 
-    then try to mimic the style of the tips and advice for the corresponding question.
-
-    Below is a sample question:
-    {question}
-
-    Here is a list of best practies of how we normally respond to prospect in similar scenarios:
-    {response}
-
-    Please write the best response for the interest of the 
-    """
-
-    # prompt_template = PromptTemplate(
-    #     input_variables=["question", "response"],
-    #     template=tmp
-    # )
-
-    # chain = LLMChain(llm=llm, prompt=prompt_template)
+    llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k-0613")
+    prompt_template = PromptTemplate(
+        input_variables=['question', 'response'],
+        template=prompt())
+    chain = LLMChain(llm=llm, prompt=prompt_template)
 
     # 4. Retrieval augmented generation
-    # response = chain.run(question=msg, response=results)
+    response = chain.run(question=query, response=src_responses)
+    return response
 
-    # print(response)
-    # with open('./response.tmp.txt', 'w+') as f:
-    #     f.write(f'{response}')
 
-    return
+def main(query):
+    load_dotenv()
+    src = vectorise()
+    src_responses = retrieve_info(src, query)
+
+    results = generate_response(query, src_responses)
+
+    with open('./results.tmp.md', 'a') as f:
+        f.write('### *ENTRY*\n')
+        f.write(f'#### Type: {type(results)}\n')
+        f.write(f'{results}')
+        f.write('\n---\n')
+
+    answers = results.split('a: ')
+    # TODO: more logic on splitting answers
+    if len(answers) > 1:
+        final = answers[1]
+    else:
+        final = answers[0]
+    return final
 
 
 if __name__ == '__main__':

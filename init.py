@@ -3,6 +3,7 @@ import time
 import streamlit as st
 
 from utils.shuffle import shuffle  # NOQA
+import app  # NOQA
 
 
 def send_request(msg=''):
@@ -21,10 +22,11 @@ def main():
 
     if message:
         with st.spinner(shuffle()):
-            api_response = send_request()
+            # api_response = send_request()
+            api_response = app.main(message)
 
-        st.success(f"API response: {api_response['data']}")
-        st.info('> Result goes here...')
+        # st.success(f"API response: {api_response['data']}")
+        st.info(f'{api_response}')
     return
 
 
