@@ -3,6 +3,7 @@ import time
 import streamlit as st
 
 from utils.shuffle import shuffle  # NOQA
+from utils.splitter import split  # NOQA
 import app  # NOQA
 
 
@@ -18,6 +19,8 @@ def main():
     col1.markdown('# Welcome')
     col2.markdown('# to mico.AI 💭')
     col3.markdown('### | Ask me about engineering')
+
+    pdf = st.file_uploader('Upload your PDF', type='pdf')
     message = st.text_area("How can I help you today?")
 
     if message:
@@ -27,6 +30,9 @@ def main():
 
         # st.success(f"API response: {api_response['data']}")
         st.info(f'{api_response}')
+
+    if pdf:
+        st.info(split(pdf, 'sample'))
     return
 
 
