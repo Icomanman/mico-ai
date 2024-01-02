@@ -32,7 +32,9 @@ def main():
         st.info(f'{api_response}')
 
     if pdf:
-        st.info(split(pdf, 'sample'))
+        with st.spinner(shuffle()):
+            body = split(pdf, 'aci-handbook-2015')
+            st.info(body)
     return
 
 
