@@ -2,9 +2,9 @@
 import time
 import streamlit as st
 
+from app import main as rag  # NOQA
 from utils.shuffle import shuffle  # NOQA
 from utils.splitter import split  # NOQA
-import app  # NOQA
 
 
 def send_request(msg=''):
@@ -25,10 +25,8 @@ def main():
 
     if message:
         with st.spinner(shuffle()):
-            # api_response = send_request()
-            api_response = app.main(message)
+            api_response = rag(message)
 
-        # st.success(f"API response: {api_response['data']}")
         st.info(f'{api_response}')
 
     if pdf:
