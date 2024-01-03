@@ -3,6 +3,7 @@ import time
 import streamlit as st
 
 from app import main as rag  # NOQA
+from qna import qna  # NOQA
 from utils.shuffle import shuffle  # NOQA
 from utils.splitter import split  # NOQA
 
@@ -22,17 +23,24 @@ def main():
 
     pdf = st.file_uploader('Upload your PDF', type='pdf')
     message = st.text_area("How can I help you today?")
+    body = None
 
-    if message:
+    if pdf:
+        with st.spinner(shuffle()):
+            body = split(pdf, 'aci-handbook-2015')
+            if body:
+                st.success('Successfuly uploaded.')
+
+    if message and body:
+        with st.spinner(shuffle()):
+            api_response = qna(message, body)
+            st.info(f'{api_response}')
+    elif message:
         with st.spinner(shuffle()):
             api_response = rag(message)
 
         st.info(f'{api_response}')
 
-    if pdf:
-        with st.spinner(shuffle()):
-            body = split(pdf, 'aci-handbook-2015')
-            st.info(body)
     return
 
 
