@@ -13,7 +13,7 @@ from tmp.prompt import prompt  # NOQA
 
 
 # 1. Vectorise the csv data
-def vectorise(path='./tmp/dat.csv'):
+def _vectorise(path='./tmp/dat.csv'):
     try:
         loader = CSVLoader(file_path=path)
         documents = loader.load()
@@ -38,7 +38,7 @@ def retrieve_info(src, query):
 
 
 # 3-4. Setup LLMChain & prompts; Retrieval augmented generation
-def generate_response(query, src_responses):
+def _generate_response(query, src_responses):
     # 3. Setup LLMChain & prompts
     llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k-0613")
     prompt_template = PromptTemplate(
@@ -53,10 +53,10 @@ def generate_response(query, src_responses):
 
 def main(query):
     load_dotenv()
-    src = vectorise()
+    src = _vectorise()
     src_responses = retrieve_info(src, query)
 
-    results = generate_response(query, src_responses)
+    results = _generate_response(query, src_responses)
 
     with open('./results.tmp.md', 'a') as f:
         f.write('### *ENTRY*\n')
