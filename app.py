@@ -1,5 +1,6 @@
 
 import sys
+import time
 from typing import List
 from langchain.document_loaders.csv_loader import CSVLoader
 from langchain.docstore.document import Document
@@ -15,6 +16,7 @@ from tmp.prompt import prompt  # NOQA
 
 # 1. Vectorise the csv data (this only converst the csv into a list of Document object)
 def _vectorise(path='./tmp/dat.csv') -> List[Document]:
+    start = time.time()
     try:
         loader = CSVLoader(file_path=path)
         documents = loader.load()
@@ -23,11 +25,13 @@ def _vectorise(path='./tmp/dat.csv') -> List[Document]:
         sys.exit(1)
 
     print(f'> {len(documents)} entries found.')
+    print(f'> csv: {(time.time() - start)} s')
     return documents
 
 
 # 2. Function for similarity search
 def retrieve_info(src: list, query: str) -> List[str]:
+    start = time.time()
     result_data = []
     # These 2 lines are actually responsible for vectorisation
     embeddings = OpenAIEmbeddings()
@@ -39,11 +43,13 @@ def retrieve_info(src: list, query: str) -> List[str]:
 
     # Extracts 'page_content' from the Document object as str and puts the into List Comprehension -> List[str]
     result_data = [doc.page_content for doc in responses]
+    print(f'> retrieval: {(time.time() - start)} s')
     return result_data
 
 
 # 3-4. Setup LLMChain & prompts; Retrieval augmented generation
 def _generate_response(query: str, src_responses: List[str]) -> str:
+    start = time.time()
     # 3. Setup LLMChain & prompts
     llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k-0613")
     prompt_template = PromptTemplate(
@@ -53,6 +59,7 @@ def _generate_response(query: str, src_responses: List[str]) -> str:
 
     # 4. Retrieval augmented generation
     response = chain.run(question=query, response=src_responses)
+    print(f'> generate: {(time.time() - start)} s')
     return response
 
 

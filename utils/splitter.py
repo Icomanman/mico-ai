@@ -1,4 +1,5 @@
 
+import uuid
 from typing import List
 from langchain.text_splitter import CharacterTextSplitter
 from PyPDF2 import PdfReader
@@ -21,7 +22,7 @@ def split(pdf: UploadedFile = None, title: str = '') -> List[str]:
         raise ValueError('> Invalid PDF.')
 
     reader = PdfReader(pdf)
-    file_name = title if title else 'reader'
+    file_name = title if title else f'user-file-{uuid.uuid4()}'
 
     page_no = 1
     body = ''

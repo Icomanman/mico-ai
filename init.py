@@ -1,4 +1,5 @@
 
+import time
 import streamlit as st
 
 from app import main as rag  # NOQA
@@ -15,26 +16,38 @@ def main() -> None:
     col2.markdown('# to mico.AI 💭')
     col3.markdown('### | Ask me about engineering')
 
-    pdf = st.file_uploader('Upload your PDF', type='pdf')
-    message = st.text_area("How can I help you today?")
-    body = None
+    toggle_label = 'Upload a PDF'
+    toggle_help = 'Select between asking questions or uploading and querying your pdf'
+    use_upload = st.toggle(label=toggle_label, help=toggle_help)
 
-    if pdf:
-        with st.spinner(shuffle()):
-            body = split(pdf, 'aci-handbook-2015')
-            if body:
-                st.success('Successfuly uploaded.')
+    if not use_upload:
+        message = st.text_area(
+            "How can I help you today?", key='direct_message')
+        if message:
+            with st.spinner(shuffle()):
+                api_response = rag(message)
 
-    if message and body:
-        with st.spinner(shuffle()):
-            api_response = qna(message, body)
             st.info(f'{api_response}')
-    elif message:
-        with st.spinner(shuffle()):
-            api_response = rag(message)
+    else:
+        hint = 'You can now query your pdf.'
+        pdf = st.file_uploader('Upload your PDF', type='pdf')
+        if pdf:
+            start = time.time()
+            with st.spinner(shuffle()):
+                # body = split(pdf)
+                success = st.success('Successfuly uploaded.', icon='✅')
+                print(f'> upload only: {(time.time() - start)} s')
 
-        st.info(f'{api_response}')
+            message = st.text_area(label=hint, key='upload_query')
 
+            if message:
+                success.empty()
+                start = time.time()
+                with st.spinner(shuffle()):
+                    body = split(pdf)
+                    print(f'> split: {(time.time() - start)} s')
+                    api_response = qna(body, message)
+                    st.info(f'{api_response}')
     return
 
 
