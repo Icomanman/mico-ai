@@ -1,9 +1,12 @@
 
+from typing import List
 from langchain.text_splitter import CharacterTextSplitter
 from PyPDF2 import PdfReader
 
+from streamlit.runtime.uploaded_file_manager import UploadedFile
 
-def split_to_chunks(txt):
+
+def split_to_chunks(txt: str) -> List[str]:
     splitter = CharacterTextSplitter(
         separator='\n',
         chunk_size=1000,
@@ -13,7 +16,7 @@ def split_to_chunks(txt):
     return splitter.split_text(txt)
 
 
-def split(pdf=None, title=''):
+def split(pdf: UploadedFile = None, title: str = '') -> List[str]:
     if pdf is None:
         raise ValueError('> Invalid PDF.')
 
@@ -21,7 +24,7 @@ def split(pdf=None, title=''):
     file_name = title if title else 'reader'
 
     page_no = 1
-    body = []
+    body = ''
     with open(f'./dump/{file_name}.md', 'w+', encoding='utf-8') as f:
         for page in reader.pages:
             new_page = ''
@@ -35,9 +38,9 @@ def split(pdf=None, title=''):
             f.write(new_page)
             page_no += 1
 
-            body.extend(split_to_chunks(new_page))
+            body += new_page
 
-    return body
+    return split_to_chunks(body)
 
 
 if __name__ == '__main__':
