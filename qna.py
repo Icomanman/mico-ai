@@ -1,4 +1,5 @@
 
+import inspect
 import sys
 import time
 import streamlit as st
@@ -19,7 +20,7 @@ def qna(body: List[str] = [], doc_query: str = '') -> str:
     if len(body) > 0:
         llm = OpenAI()
         chain = load_qa_chain(llm, chain_type="stuff")
-        embeddings = OpenAIEmbeddings()
+        embeddings = OpenAIEmbeddings(disallowed_special=())
         start = time.time()
 
         try:
