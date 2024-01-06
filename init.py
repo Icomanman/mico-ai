@@ -10,11 +10,13 @@ from utils.splitter import split  # NOQA
 
 def main() -> None:
     st.set_page_config(
-        page_title="mico.AI", page_icon="💭")
-    col1, col2, col3 = st.columns([1, 2, 1])
-    col1.markdown('# Welcome')
-    col2.markdown('# to mico.AI 💭')
-    col3.markdown('### | Ask me about engineering')
+        page_title="mico.AI",
+        page_icon="💭",
+        layout="wide")  # NOQA
+    col1, col2 = st.columns([3,  3])
+    col1.markdown('# Welcome to mico.AI 💭')
+    col1.subheader('| Ask me about engineering')
+    # col2.bar_chart(height=150)
 
     toggle_label = 'Upload a PDF'
     toggle_help = 'Select between asking questions or uploading and querying your pdf'
