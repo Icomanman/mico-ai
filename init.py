@@ -5,7 +5,7 @@ import streamlit as st
 from app import main as rag  # NOQA
 from qna import qna  # NOQA
 from utils.shuffle import shuffle  # NOQA
-from utils.splitter import split  # NOQA
+from utils.splitter import split_pdf  # NOQA
 
 
 def main() -> None:
@@ -46,7 +46,7 @@ def main() -> None:
                 success.empty()
                 start = time.time()
                 with st.spinner(shuffle()):
-                    body = split(pdf)
+                    body = split_pdf(pdf)
                     print(f'> split: {(time.time() - start)} s')
                     api_response = qna(body, message)
                     st.info(f'{api_response}')

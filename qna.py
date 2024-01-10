@@ -1,5 +1,4 @@
 
-import inspect
 import sys
 import time
 import streamlit as st
@@ -13,6 +12,8 @@ from langchain.callbacks import get_openai_callback
 
 from dotenv import load_dotenv
 
+from utils.local_embeddings import embed  # NOQA
+
 
 def qna(body: List[str] = [], doc_query: str = '') -> str:
     load_dotenv()
@@ -20,7 +21,8 @@ def qna(body: List[str] = [], doc_query: str = '') -> str:
     if len(body) > 0:
         llm = OpenAI()
         chain = load_qa_chain(llm, chain_type="stuff")
-        embeddings = OpenAIEmbeddings(disallowed_special=())
+        # embeddings = OpenAIEmbeddings(disallowed_special=())
+        embeddings = embed()
         start = time.time()
 
         try:

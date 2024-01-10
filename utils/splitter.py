@@ -17,7 +17,7 @@ def split_to_chunks(txt: str) -> List[str]:
     return splitter.split_text(txt)
 
 
-def split(pdf: UploadedFile = None, title: str = '') -> List[str]:
+def split_pdf(pdf: UploadedFile = None, title: str = '') -> List[str]:
     if pdf is None:
         raise ValueError('> Invalid PDF.')
 
@@ -45,4 +45,4 @@ def split(pdf: UploadedFile = None, title: str = '') -> List[str]:
 
 
 if __name__ == '__main__':
-    split()
+    split_pdf()
