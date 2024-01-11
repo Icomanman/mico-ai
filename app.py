@@ -12,9 +12,13 @@ from langchain.chains import LLMChain
 from dotenv import load_dotenv
 
 from tmp.prompt import prompt  # NOQA
-
+from utils.local_embeddings import embed  # NOQA
+from utils.document_loader import load_documents  # NOQA
+from tmp.presentation import present  # NOQA
 
 # 1. Vectorise the csv data (this only converst the csv into a list of Document object)
+
+
 def _vectorise(path='./tmp/dat.csv') -> List[Document]:
     start = time.time()
     try:
@@ -34,12 +38,13 @@ def retrieve_info(src: list, query: str) -> List[str]:
     start = time.time()
     result_data = []
     # These 2 lines are actually responsible for vectorisation
-    embeddings = OpenAIEmbeddings()
+    # embeddings = OpenAIEmbeddings()
+    embeddings = embed()
     db = FAISS.from_documents(src, embeddings)
 
     # Returns 'list' of Document object
     responses = db.similarity_search(
-        query, k=3)
+        query, k=2)
 
     # Extracts 'page_content' from the Document object as str and puts the into List Comprehension -> List[str]
     result_data = [doc.page_content for doc in responses]
@@ -52,10 +57,15 @@ def _generate_response(query: str, src_responses: List[str]) -> str:
     start = time.time()
     # 3. Setup LLMChain & prompts
     llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k-0613")
+    # prompt_template = PromptTemplate(
+    #     input_variables=['question', 'response'],
+    #     template=prompt())
     prompt_template = PromptTemplate(
-        input_variables=['question', 'response'],
-        template=prompt())
+        input_variables=['question'], template=present())
     chain = LLMChain(llm=llm, prompt=prompt_template)
+
+    print(f'> prompt/chain init: {(time.time() - start)} s')
+    start = time.time()
 
     # 4. Retrieval augmented generation
     response = chain.run(question=query, response=src_responses)
@@ -65,7 +75,11 @@ def _generate_response(query: str, src_responses: List[str]) -> str:
 
 def main(query: str) -> str:
     load_dotenv()
-    src = _vectorise()
+
+    # src = _vectorise()
+    src = load_documents(path='./pdf/md', src_type='md')
+    # src = load_documents(path='./pdf/src', src_type='pdf')
+
     src_responses = retrieve_info(src, query)
     results = _generate_response(query, src_responses)
 
