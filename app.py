@@ -1,4 +1,5 @@
 
+import os
 import sys
 import time
 from typing import List
@@ -11,10 +12,10 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
 from dotenv import load_dotenv
 
-from tmp.prompt import prompt  # NOQA
+# from tmp.prompt import prompt  # NOQA
 from utils.local_embeddings import embed  # NOQA
 from utils.document_loader import load_documents  # NOQA
-from tmp.presentation import present  # NOQA
+# from tmp.presentation import present  # NOQA
 
 # 1. Vectorise the csv data (this only converst the csv into a list of Document object)
 
@@ -57,11 +58,9 @@ def _generate_response(query: str, src_responses: List[str]) -> str:
     start = time.time()
     # 3. Setup LLMChain & prompts
     llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k-0613")
-    # prompt_template = PromptTemplate(
-    #     input_variables=['question', 'response'],
-    #     template=prompt())
+    PROMPT = os.environ.get('PROMPT')
     prompt_template = PromptTemplate(
-        input_variables=['question'], template=present())
+        input_variables=['question'], template=PROMPT)
     chain = LLMChain(llm=llm, prompt=prompt_template)
 
     print(f'> prompt/chain init: {(time.time() - start)} s')
