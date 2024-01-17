@@ -10,12 +10,15 @@ load_dotenv()
 
 
 class Drive:
+    """
+        Requires a Service account file and scopes url.
+    """
+
     def __init__(self):
-        """
-            Requires a Service account file and scopes url.
-        """
+        SERVICE_KEY = os.environ.get('SERVICE_KEY')
+        SCOPES = os.environ.get('SCOPES')
         credentials = service_account.Credentials.from_service_account_file(
-            SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+            SERVICE_KEY, scopes=SCOPES)
         self.service = build('drive', 'v3', credentials=credentials)
 
     def download(self, file_path: str = ''):
@@ -40,7 +43,7 @@ class Drive:
             'parents': [folder_id]
         }
         media_body = MediaFileUpload(file_path, resumable=True)
-        file = drive_service.files().create(
+        file = self.service.files().create(
             body=file_metadata,
             media_body=media_body
         ).execute()
