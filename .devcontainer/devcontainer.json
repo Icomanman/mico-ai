@@ -10,10 +10,19 @@
       ]
     },
     "vscode": {
-      "settings": {},
+      "settings": {
+        "workbench.colorTheme": "Mariana Midnight",
+        "keyboard.dispatch": "keyCode",
+        "editor.renderWhitespace": "all",
+        "editor.formatOnSave": true
+      },
       "extensions": [
         "ms-python.python",
-        "ms-python.vscode-pylance"
+        "ms-python.vscode-pylance",
+        "vscodevim.vim",
+        "smlombardi.mariana",
+        "dbaeumer.vscode-eslint",
+        "ms-python.autopep8"
       ]
     }
   },
