@@ -8,6 +8,7 @@ from qna import qna  # NOQA
 from utils.shuffle import shuffle  # NOQA
 from utils.splitter import split_pdf  # NOQA
 from utils.drive import Drive  # NOQA
+from utils.st_upload import upload_file  # NOQA
 
 
 def get_files():
@@ -26,10 +27,36 @@ def main() -> None:
         page_title="mico.AI",
         page_icon="💭",
         layout="wide")  # NOQA
-    col1, col2 = st.columns([3,  3])
+    col1, col2, col3 = st.columns([3, 2, 1])
     col1.markdown('# Welcome to mico.AI 💭')
     col1.subheader('| Ask me about engineering')
-    # col2.bar_chart(height=150)
+
+    # *************************************************************************
+    # *************************************************************************
+    # BE upload - Streamlit only
+    be_upload = col3.toggle(label='🚨')
+    cont = col3.empty()
+    peewee = None
+    if be_upload and not peewee:
+        peewee = cont.text_input(
+            label='I hope you know what you are doing...SMH', type='password')
+
+    if peewee == os.environ.get('PW') and be_upload:
+        cont.empty()
+        ffile = col2.file_uploader('Backend Upload')
+
+        if ffile:
+            oks = st.success('Successfuly uploaded.', icon='✅')
+            with st.spinner(shuffle()):
+                msg = upload_file(ffile.getbuffer(), ffile.name)
+                st.info(msg)
+
+                if msg:
+                    be_upload = False
+                    peewee = None
+                    oks.empty()
+    # *************************************************************************
+    # *************************************************************************
 
     toggle_label = 'Upload a PDF'
     toggle_help = 'Select between asking questions or uploading and querying your pdf'

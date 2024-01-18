@@ -59,7 +59,9 @@ def _generate_response(query: str, src_responses: List[str]) -> str:
     start = time.time()
     # 3. Setup LLMChain & prompts
     llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k-0613")
+
     PROMPT = os.environ.get('PROMPT')
+
     prompt_template = PromptTemplate(
         input_variables=['question'], template=PROMPT)
     chain = LLMChain(llm=llm, prompt=prompt_template)
