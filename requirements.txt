@@ -45,8 +45,11 @@ jsonpath-python==1.0.6
 jsonpointer==2.4
 jsonschema==4.20.0
 jsonschema-specifications==2023.11.2
+langchain==0.1.1
+langchain-community==0.0.13
+langchain-core==0.1.12
 langdetect==1.0.9
-langsmith==0.0.75
+langsmith==0.0.82
 lxml==5.1.0
 Markdown==3.5.2
 markdown-it-py==3.0.0
