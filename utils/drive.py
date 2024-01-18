@@ -1,10 +1,12 @@
 
 import os
+from google.auth.transport.requests import Request
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 from dotenv import load_dotenv
 import io
+import json
 
 load_dotenv()
 
@@ -15,19 +17,25 @@ class Drive:
     """
 
     def __init__(self):
-        SERVICE_KEY = os.environ.get('SERVICE_KEY')
+        with open('./tmp/json.env', 'r') as json_file:
+            SERVICE_KEY = json.load(json_file)
+
         SCOPES = os.environ.get('SCOPES')
-        credentials = service_account.Credentials.from_service_account_file(
+
+        credentials = service_account.Credentials.from_service_account_info(
             SERVICE_KEY, scopes=SCOPES)
         self.service = build('drive', 'v3', credentials=credentials)
 
-    def download(self, file_path: str = ''):
+        if not credentials.token:
+            raise ValueError('> Credentials validations failed.')
+
+    def download(self, file_id: str = ''):
         if not os.path.exists('./tmp'):
             os.mkdir('./tmp')
 
         local_path = './tmp'
-        req = self.service.files().get_media(file_path=file_path)
-        fh = io.FileIO(local_path, 'wb')  # binary
+        req = self.service.files().get_media(fileId=file_id)
+        fh = io.FileIO(f'{local_path}/dsa.py', 'wb')  # binary
         downloader = MediaIoBaseDownload(fh, req)
 
         done = False

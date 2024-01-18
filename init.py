@@ -15,8 +15,9 @@ def get_files():
         os.mkdir('./tmp')
 
     drive_service = Drive()
-    folder = os.environ.get('PROMPT_FOLDER')
-    drive_service.download(f'{folder}/dsa_prompt.py')
+    # folder = os.environ.get('PROMPT_FOLDER')
+    file_id = os.environ.get('FILE_ID')
+    drive_service.download(file_id)
     return
 
 
