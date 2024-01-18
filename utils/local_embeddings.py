@@ -1,6 +1,6 @@
 
-from langchain.vectorstores import Chroma
-from langchain.embeddings import HuggingFaceBgeEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 
 hf_model = 'jinaai/jina-embedding-b-en-v1'
 default_device = 'cpu'  # or 'cuda' if available

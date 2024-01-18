@@ -3,13 +3,14 @@ import os
 import sys
 import time
 from typing import List
-from langchain.document_loaders.csv_loader import CSVLoader
 from langchain.docstore.document import Document
-from langchain.vectorstores import FAISS
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.prompts import PromptTemplate
-from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
+
+from langchain_community.chat_models import ChatOpenAI
+from langchain_community.document_loaders.csv_loader import CSVLoader
+from langchain_community.vectorstores import FAISS
 from dotenv import load_dotenv
 
 # from tmp.prompt import prompt  # NOQA
