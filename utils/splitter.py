@@ -1,4 +1,5 @@
 
+import os
 import uuid
 from typing import List
 from langchain.text_splitter import CharacterTextSplitter
@@ -26,17 +27,28 @@ def split_pdf(pdf: UploadedFile = None, title: str = '') -> List[str]:
 
     page_no = 1
     body = ''
-    with open(f'./dump/{file_name}.md', 'w+', encoding='utf-8') as f:
+    if os.path.isdir('./dump'):
+        with open(f'./dump/{file_name}.md', 'w+', encoding='utf-8') as f:
+            for page in reader.pages:
+                new_page = ''
+                new_page += f'### *Page {page_no}* ###\n'
+
+                page_txt = page.extract_text()
+
+                new_page += page_txt.replace('?', '--')
+                new_page += '\n\n---\n'
+
+                f.write(new_page)
+                page_no += 1
+
+                body += new_page
+    else:
         for page in reader.pages:
             new_page = ''
             new_page += f'### *Page {page_no}* ###\n'
-
             page_txt = page.extract_text()
-
             new_page += page_txt.replace('?', '--')
             new_page += '\n\n---\n'
-
-            f.write(new_page)
             page_no += 1
 
             body += new_page

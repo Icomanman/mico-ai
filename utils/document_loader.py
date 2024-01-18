@@ -1,9 +1,9 @@
 
 from typing import List
 from langchain.docstore.document import Document
-from langchain.document_loaders import PyPDFLoader, DirectoryLoader, TextLoader
 from langchain_community.document_loaders import UnstructuredMarkdownLoader
 
+from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader, TextLoader
 from utils.splitter import split_to_chunks  # NOQA
 
 

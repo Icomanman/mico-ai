@@ -1,4 +1,5 @@
 
+import os
 import time
 import streamlit as st
 
@@ -6,6 +7,18 @@ from app import main as rag  # NOQA
 from qna import qna  # NOQA
 from utils.shuffle import shuffle  # NOQA
 from utils.splitter import split_pdf  # NOQA
+from utils.drive import Drive  # NOQA
+
+
+def get_files():
+    if not os.path.exists('./tmp'):
+        os.mkdir('./tmp')
+
+    drive_service = Drive()
+    # folder = os.environ.get('PROMPT_FOLDER')
+    file_id = os.environ.get('FILE_ID')
+    drive_service.download(file_id)
+    return
 
 
 def main() -> None:
@@ -54,4 +67,5 @@ def main() -> None:
 
 
 if __name__ == '__main__':
+    # get_files()
     main()
