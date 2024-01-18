@@ -12,13 +12,23 @@ from utils.st_upload import upload_file  # NOQA
 
 
 def get_files():
-    if not os.path.exists('./tmp'):
-        os.mkdir('./tmp')
-
     drive_service = Drive()
     # folder = os.environ.get('PROMPT_FOLDER')
     file_id = os.environ.get('FILE_ID')
     drive_service.download(file_id)
+    return
+
+
+def init_folders() -> None:
+    if not os.path.exists('./tmp'):
+        os.mkdir('./tmp')
+
+    if not os.path.exists('./pdf'):
+        os.mkdir('./pdf')
+
+    if not os.path.exists('./dump'):
+        os.mkdir('./dump')
+    print('> Folders initialised.')
     return
 
 
@@ -95,4 +105,5 @@ def main() -> None:
 
 if __name__ == '__main__':
     # get_files()
+    init_folders()
     main()
