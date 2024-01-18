@@ -67,5 +67,5 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    get_files()
-    # main()
+    # get_files()
+    main()
