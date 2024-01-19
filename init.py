@@ -7,16 +7,18 @@ from app import main as rag  # NOQA
 from qna import qna  # NOQA
 from utils.shuffle import shuffle  # NOQA
 from utils.splitter import split_pdf  # NOQA
-from utils.drive import Drive  # NOQA
+# from utils.drive import Drive  # NOQA
 from utils.st_upload import upload_file  # NOQA
 
 
+"""
 def get_files():
     drive_service = Drive()
     # folder = os.environ.get('PROMPT_FOLDER')
     file_id = os.environ.get('FILE_ID')
     drive_service.download(file_id)
     return
+"""
 
 
 def init_folders() -> None:
@@ -41,6 +43,7 @@ def main() -> None:
     col1.markdown('# Welcome to mico.AI 💭')
     col1.subheader('| Ask me about engineering')
 
+    wf = col3.selectbox('Profile', ['Presentation', 'Knowledge Base', 'DSA'])
     # *************************************************************************
     # *************************************************************************
     # BE upload - Streamlit only
