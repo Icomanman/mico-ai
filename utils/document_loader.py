@@ -13,9 +13,13 @@ def load_documents(path: str = './pdf/src/', src_type: str = 'pdf') -> List[Docu
     Returns Document object to be split (into chunks). Document is a Langchain schema.
     """
     # TODO: add logic between different file types
-    loader = DirectoryLoader(
-        path, glob=f'./*.{src_type}', loader_cls=UnstructuredMarkdownLoader)
+    # loader = DirectoryLoader(
+    #     path, glob=f'./*.{src_type}', loader_cls=UnstructuredMarkdownLoader)
+
+    # Changed to single doc loader for now: 20 Feb 2024
+    loader = TextLoader(path, 'utf-8', autodetect_encoding=True)
     docs = loader.load()
+    print('> Found docs:', len(docs))
     return docs
 
 

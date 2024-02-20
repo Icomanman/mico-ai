@@ -35,7 +35,7 @@ def main() -> None:
     col1.markdown('# Welcome to mico.AI 💭')
     col1.subheader('| Ask me about engineering')
 
-    wf = col3.selectbox('Profile', ['Knowledge Base', 'Report'])
+    wf = col3.selectbox('Profile', ['Report', 'Knowledge Base',])
     # *************************************************************************
     # *************************************************************************
     # BE upload - Streamlit only
