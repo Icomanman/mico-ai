@@ -1,5 +1,4 @@
 
-import os
 import sys
 import time
 from typing import List
@@ -11,9 +10,8 @@ from langchain.chains import LLMChain
 from langchain_community.chat_models import ChatOpenAI
 from langchain_community.document_loaders.csv_loader import CSVLoader
 from langchain_community.vectorstores import FAISS
-from dotenv import load_dotenv
 
-# from tmp.prompt import prompt  # NOQA
+from tmp.prompt import prompt as local_prompt  # NOQA
 from utils.local_embeddings import embed  # NOQA
 from utils.document_loader import load_documents  # NOQA
 # from tmp.presentation import present  # NOQA
@@ -55,9 +53,17 @@ def _retrieve_info(src: list, query: str) -> List[str]:
 
 
 # 3. Setup prompt:
-def _set_prompt(workflow: str) -> PromptTemplate:
-    input_vars = []
+def _set_prompt(workflow: str = '') -> PromptTemplate:
+    if not workflow:
+        return ''
+
     src_prompt = ''
+    input_vars = []
+    if workflow == 'Knowledge Base':
+        input_vars.extend(['question', 'response'])
+        src_prompt = local_prompt()
+    # elif workflow =='Report':
+
     prompt = PromptTemplate(
         input_variables=input_vars, template=src_prompt)
     return prompt
@@ -78,14 +84,18 @@ def _generate_response(query: str, src_responses: List[str], prompt_template: Pr
 
 
 def main(query: str, workflow: str) -> str:
-    load_dotenv()
-
-    # TODO: workflow logic
-    # src = _vectorise()
-    src = load_documents(path='./pdf/md', src_type='md')
-    # src = load_documents(path='./pdf/src', src_type='pdf')
+    if workflow == 'Knowledge Base':
+        src = _vectorise()
+    elif workflow == 'Report':
+        src = load_documents(path='./pdf/md', src_type='md')
+        # src = load_documents(path='./pdf/src', src_type='pdf')
+    else:
+        return
 
     custom_prompt = _set_prompt(workflow)
+    if not custom_prompt:
+        raise ValueError('> Unable to generate custom prompt.')
+
     src_responses = _retrieve_info(src, query)
     results = _generate_response(query, src_responses, custom_prompt)
     with open('./results.tmp.md', 'a') as f:

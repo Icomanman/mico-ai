@@ -1,7 +1,6 @@
 
 import sys
 import time
-import streamlit as st
 from typing import List
 
 from langchain.chains.question_answering import load_qa_chain

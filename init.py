@@ -7,34 +7,26 @@ from app import main as rag  # NOQA
 from qna import qna  # NOQA
 from utils.shuffle import shuffle  # NOQA
 from utils.splitter import split_pdf  # NOQA
-# from utils.drive import Drive  # NOQA
 from utils.st_upload import upload_file  # NOQA
-
-
-"""
-def get_files():
-    drive_service = Drive()
-    # folder = os.environ.get('PROMPT_FOLDER')
-    file_id = os.environ.get('FILE_ID')
-    drive_service.download(file_id)
-    return
-"""
+from dotenv import load_dotenv  # NOQA
 
 
 def init_folders() -> None:
     if not os.path.exists('./tmp'):
         os.mkdir('./tmp')
-
+        print('> /tmp initialised.')
     if not os.path.exists('./pdf'):
         os.mkdir('./pdf')
-
+        print('> /pdf initialised.')
     if not os.path.exists('./dump'):
         os.mkdir('./dump')
-    print('> Folders initialised.')
+        print('> /dump initialised.')
+
     return
 
 
 def main() -> None:
+    load_dotenv()
     st.set_page_config(
         page_title="mico.AI",
         page_icon="💭",
@@ -43,7 +35,7 @@ def main() -> None:
     col1.markdown('# Welcome to mico.AI 💭')
     col1.subheader('| Ask me about engineering')
 
-    wf = col3.selectbox('Profile', ['Presentation', 'Knowledge Base', 'DSA'])
+    wf = col3.selectbox('Profile', ['Knowledge Base', 'Report'])
     # *************************************************************************
     # *************************************************************************
     # BE upload - Streamlit only
@@ -54,7 +46,7 @@ def main() -> None:
         peewee = cont.text_input(
             label='I hope you know what you are doing...SMH', type='password')
 
-    if peewee == os.environ.get('PW') and be_upload:
+    if peewee == os.environ.get('PEW') and be_upload:
         cont.empty()
         ffile = col2.file_uploader('Backend Upload')
 
@@ -80,7 +72,7 @@ def main() -> None:
             "How can I help you today?", key='direct_message')
         if message:
             with st.spinner(shuffle()):
-                api_response = rag(message)
+                api_response = rag(message, wf)
 
             st.info(f'{api_response}')
     else:
