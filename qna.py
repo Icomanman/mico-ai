@@ -1,4 +1,5 @@
 
+import os
 import sys
 import time
 from typing import List
@@ -8,6 +9,7 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 
 from langchain_community.callbacks import get_openai_callback
 from langchain_community.llms import OpenAI
+from langchain_community.chat_models import ChatOpenAI, AzureChatOpenAI
 from langchain_community.vectorstores import FAISS
 
 from dotenv import load_dotenv
@@ -19,7 +21,17 @@ def qna(body: List[str] = [], doc_query: str = '') -> str:
     load_dotenv()
     input_docs = None
     if len(body) > 0:
-        llm = OpenAI()
+        # llm = OpenAI()
+        # Alternative llm:
+        llm = AzureChatOpenAI(
+            temperature=0,
+            model="gpt-35-turbo-eastus-unfiltered",
+            verbose=True,
+            api_version=os.environ.get('BASE_VERSION'),
+            azure_endpoint=os.environ.get('BASE'),
+            openai_api_key=os.environ.get('BASE_KEY'),
+            openai_api_type=os.environ.get('BASE_TYPE')
+        )
         chain = load_qa_chain(llm, chain_type="stuff")
         # embeddings = OpenAIEmbeddings(disallowed_special=())
         embeddings = embed()

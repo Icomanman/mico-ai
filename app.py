@@ -8,7 +8,7 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 
-from langchain_community.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI, AzureChatOpenAI
 from langchain_community.document_loaders.csv_loader import CSVLoader
 from langchain_community.vectorstores import FAISS
 
@@ -83,7 +83,17 @@ def _set_prompt(workflow: str = '') -> PromptTemplate:
 def _generate_response(query: str, src_responses: List[str], prompt_template: PromptTemplate) -> str:
     start = time.time()
     # Setup LLMChain
-    llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k-0613")
+    # llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k-0613")
+    # Alternative llm:
+    llm = AzureChatOpenAI(
+        temperature=0,
+        model="gpt-35-turbo-eastus-unfiltered",
+        verbose=True,
+        api_version=os.environ.get('BASE_VERSION'),
+        azure_endpoint=os.environ.get('BASE'),
+        openai_api_key=os.environ.get('BASE_KEY'),
+        openai_api_type=os.environ.get('BASE_TYPE')
+    )
     chain = LLMChain(llm=llm, prompt=prompt_template)
     print(f'> prompt/chain init: {(time.time() - start)} s')
     start = time.time()
