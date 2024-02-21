@@ -15,9 +15,10 @@ from langchain_community.vectorstores import FAISS
 from dotenv import load_dotenv
 
 from utils.local_embeddings import embed  # NOQA
+from utils.splitter import split_to_chunks  # NOQA
 
 
-def qna(body: List[str] = [], doc_query: str = '') -> str:
+def qna(body: List[str] = [], doc_query: str = '', _save: bool = False) -> str:
     load_dotenv()
     input_docs = None
     if len(body) > 0:
@@ -35,17 +36,37 @@ def qna(body: List[str] = [], doc_query: str = '') -> str:
         chain = load_qa_chain(llm, chain_type="stuff")
         # embeddings = OpenAIEmbeddings(disallowed_special=())
         embeddings = embed()
+
+        if type(body[0]) is not str:
+            body = split_to_chunks(body[0].page_content)
+            print('> split body')
+
+        print(type(body))
+        print(len(body))
         start = time.time()
 
-        try:
-            db = FAISS.from_texts(body, embeddings)
-            # Returns 'list' of Document object
+        local_path = './dump/3404'
+        if os.path.exists(local_path) and _save:
+            db = FAISS.load_local(local_path, embeddings)
+            print('> local db is found at.', local_path)
             input_docs = db.similarity_search(doc_query, k=3)
-            print(f'> embeddings + SS: {(time.time() - start)} s')
-        except Exception as e:
-            print(f'> qna:\n{e}')
-            print(f'> embeddings ERROR: {(time.time() - start)} s')
-            sys.exit(1)
+            print(f'> SS Only: {(time.time() - start)} s')
+        else:
+            try:
+                print('> starting FAISS...')
+                db = FAISS.from_texts(body, embeddings)
+
+                if _save:
+                    print('> saving...')
+                    db.save_local(local_path)
+
+                # Returns 'list' of Document object
+                input_docs = db.similarity_search(doc_query, k=3)
+                print(f'> embeddings + SS: {(time.time() - start)} s')
+            except Exception as e:
+                print(f'> qna:\n{e}')
+                print(f'> embeddings ERROR: {(time.time() - start)} s')
+                sys.exit(1)
 
     with get_openai_callback() as cb:
         start = time.time()

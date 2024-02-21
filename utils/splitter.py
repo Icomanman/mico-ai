@@ -18,7 +18,7 @@ def split_to_chunks(txt: str) -> List[str]:
     return splitter.split_text(txt)
 
 
-def split_pdf(pdf: UploadedFile = None, title: str = '') -> List[str]:
+def split_pdf(pdf: UploadedFile = None, title: str = '', _save: bool = False) -> List[str]:
     if pdf is None:
         raise ValueError('> Invalid PDF.')
 
@@ -27,7 +27,7 @@ def split_pdf(pdf: UploadedFile = None, title: str = '') -> List[str]:
 
     page_no = 1
     body = ''
-    if os.path.isdir('./dump'):
+    if os.path.isdir('./dump') and _save:
         with open(f'./dump/{file_name}.md', 'w+', encoding='utf-8') as f:
             for page in reader.pages:
                 new_page = ''

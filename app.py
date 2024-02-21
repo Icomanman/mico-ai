@@ -18,6 +18,8 @@ from tmp.code_prompt import code_prompt  # NOQA
 from utils.local_embeddings import embed  # NOQA
 from utils.document_loader import load_documents  # NOQA
 
+from qna import qna  # NOQA
+
 # 1. Vectorise the csv data (this only converst the csv into a list of Document object)
 
 
@@ -107,22 +109,23 @@ def main(query: str, workflow: str) -> str:
     if workflow == 'Knowledge Base':
         src = _vectorise()
         src_responses = _retrieve_info(src, query)
+        custom_prompt = _set_prompt(workflow)
+        if not custom_prompt:
+            raise ValueError('> Unable to generate custom prompt.')
+
+        results = _generate_response(query, src_responses, custom_prompt)
+        with open('./results.tmp.md', 'a', encoding='utf-8') as f:
+            f.write('### *ENTRY*\n')
+            f.write(f'#### Type: {type(results)}\n')
+            f.write(f'{results}')
+            f.write('\n---\n')
     elif workflow == 'Report':
         src = load_documents(path='./pdf/md/3404.md', src_type='md')
-        src_responses = _retrieve_info(src, query, 'md')
+        # src_responses = _retrieve_info(src, query, 'md')
+        # results = qna(src_responses, query)
+        results = qna(src, query, True)
     else:
         return
-
-    custom_prompt = _set_prompt(workflow)
-    if not custom_prompt:
-        raise ValueError('> Unable to generate custom prompt.')
-
-    results = _generate_response(query, src_responses, custom_prompt)
-    with open('./results.tmp.md', 'a', encoding='utf-8') as f:
-        f.write('### *ENTRY*\n')
-        f.write(f'#### Type: {type(results)}\n')
-        f.write(f'{results}')
-        f.write('\n---\n')
 
     try:
         answers = results.split('a: ')
